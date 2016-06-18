@@ -9,6 +9,10 @@ public class Rope {
     protected Deque<Monkey> waiting = new LinkedList<>();
     protected Deque<Monkey> crossing = new LinkedList<>();
 
+    public Monkey getLast() {
+    	return all.peekLast();
+	}
+    
     public void enterDirectly(Monkey m) {
     	all.addLast(m);
     	crossing.addLast(m);

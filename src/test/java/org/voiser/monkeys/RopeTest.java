@@ -31,6 +31,8 @@ public class RopeTest {
 		}
 	}
 	
+	private EventLogger events = new Events();
+	
     @Test
     public void testEmptyRope() {
     	TestRope r = new TestRope();
@@ -40,7 +42,7 @@ public class RopeTest {
     @Test
     public void testEnterDirectly() {
     	TestRope r = new TestRope();
-    	Monkey m = new Monkey(1, Direction.RIGHT);
+    	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enterDirectly(m);
     	assertEquals("()(1>)(1>)", r.repr());
     }
@@ -48,7 +50,7 @@ public class RopeTest {
     @Test
     public void testEnqueue() {
     	TestRope r = new TestRope();
-    	Monkey m = new Monkey(1, Direction.RIGHT);
+    	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enqueue(m);
     	assertEquals("(1>)()(1>)", r.repr());
     }
@@ -56,7 +58,7 @@ public class RopeTest {
     @Test
     public void testEnqueueAndEnter() {
     	TestRope r = new TestRope();
-    	Monkey m = new Monkey(1, Direction.RIGHT);
+    	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enqueue(m);
     	r.enter(m);
     	assertEquals("()(1>)(1>)", r.repr());
@@ -65,7 +67,7 @@ public class RopeTest {
     @Test
     public void testLeave() {
     	TestRope r = new TestRope();
-    	Monkey m = new Monkey(1, Direction.RIGHT);
+    	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enqueue(m);
     	r.enter(m);
     	r.leave(m);
