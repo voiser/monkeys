@@ -3,12 +3,22 @@ package org.voiser.monkeys;
 public class Monkey implements Runnable {
 
 	public enum State {
-		NEW,
-		WAITING_ENTER,
-		WAITING_LEAVE,
-		ENTERING,
-		CROSSING, 
-		BYEBYE
+		NEW(true),
+		WAITING_ENTER(true),
+		WAITING_LEAVE(true),
+		ENTERING(true),
+		CROSSING(false), 
+		BYEBYE(false);
+		
+		private final boolean needsWait;
+		
+		private State(boolean needsWait) {
+			this.needsWait = needsWait;
+		}
+		
+		public boolean needsWait() {
+			return this.needsWait;
+		}
 	}
 
 	private static long start = -1;
@@ -17,7 +27,7 @@ public class Monkey implements Runnable {
 		long now = System.currentTimeMillis();
 		if (start == -1) start = now;
 		System.out.format("%d monkey %d %s : %s\n", 
-				(now - start), 
+				(now - start) / 1000, 
 				id, 
 				direction.repr(), 
 				text);
@@ -57,6 +67,10 @@ public class Monkey implements Runnable {
 		this.notifyLeave = other;
 	}
 	
+	public State getState() {
+		return state;
+	}
+	
 	public synchronized void notifyEnter() {
 		if (this.notifyEnter != null) {
 			events.log(this, "NotifyEnter");
@@ -86,10 +100,17 @@ public class Monkey implements Runnable {
 			}
 			else {
 				if (last.getDirection() == this.direction) {
-					log("Wait to enter");
-					state = State.WAITING_ENTER;
-					rope.enqueue(this);
-					events.log(this, "WillWaitEnter(" + last.getId() + ")");
+					if (last.getState().needsWait()) {
+						log("Wait to enter");
+						state = State.WAITING_ENTER;
+						rope.enqueue(this);
+						events.log(this, "WillWaitEnter(" + last.getId() + ")");
+					} else {
+						log("No need to wait");
+						state = State.ENTERING;
+						rope.enterDirectly(this);
+						events.log(this, "NoNeedToWait");
+					}
 				}
 				else {
 					log("Wait to leave");
@@ -128,8 +149,8 @@ public class Monkey implements Runnable {
 	}
 	
 	public void cross() throws InterruptedException {
+		notifyEnter();
 		for (int i = 0; i < 4; i++) {
-			notifyEnter();
 			Thread.sleep(1000);
 			log("...advancing...");
 		}
@@ -137,7 +158,6 @@ public class Monkey implements Runnable {
 	}
 	
 	public void leave() throws InterruptedException {
-		notifyEnter();
 		synchronized(rope) {
 			rope.leave(this);
 			events.log(this, "Leave");
@@ -150,9 +170,7 @@ public class Monkey implements Runnable {
 	public void run() {
 		try {
 			enter();
-			
 			cross();
-			
 			leave();
 		} 
 		catch (InterruptedException e) {

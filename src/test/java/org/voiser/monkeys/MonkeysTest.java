@@ -70,8 +70,8 @@ public class MonkeysTest {
 		t2.start();
 		t1.join();
 		t2.join();
-		assertEquals("EnterDirectly,Enter,NotifyEnter,Crossed,Leave", events.get(m1));
-		assertEquals("WillWaitEnter(1),WaitingEnter(1),Enter,Crossed,Leave", events.get(m2));
+		assertEquals("EnterDirectly,Enter,Crossed,Leave", events.get(m1));
+		assertEquals("NoNeedToWait,Enter,Crossed,Leave", events.get(m2));
 	}
 
 	@Test
