@@ -5,16 +5,14 @@ import java.util.LinkedList;
 
 public class Rope {
 
-    protected Deque<Monkey> all = new LinkedList<>();
     protected Deque<Monkey> waiting = new LinkedList<>();
     protected Deque<Monkey> crossing = new LinkedList<>();
 
     public Monkey getLast() {
-    	return all.peekLast();
+    	return waiting.isEmpty() ? crossing.peekLast() : waiting.peekLast();
 	}
     
     public void enterDirectly(Monkey m) {
-    	all.addLast(m);
     	crossing.addLast(m);
     }
     
@@ -25,11 +23,9 @@ public class Rope {
     
     public void enqueue(Monkey m) {
     	waiting.addLast(m);
-    	all.addLast(m);
     }
     
     public void leave(Monkey m) {
-    	all.remove(m);
     	crossing.remove(m);
     }
 }

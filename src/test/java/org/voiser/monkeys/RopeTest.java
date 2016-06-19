@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.Deque;
+import java.util.StringJoiner;
 
 public class RopeTest {
 
@@ -13,21 +14,15 @@ public class RopeTest {
 	class TestRope extends Rope {
 		
 		private String repr(Deque<Monkey> q) {
-			StringBuilder sb = new StringBuilder();
-			int len = q.size();
-			int i = 0;
+			StringJoiner sj = new StringJoiner(",");
 			for (Monkey m : q) {
-				sb.append(m.getId());
-				sb.append(m.getDirection().repr());
-				if (i++ < len - 1) {
-					sb.append(",");
-				}
+				sj.add(m.getId() + m.getDirection().repr());
 			}
-			return sb.toString();
+			return sj.toString();
 		}
 		
 		public String repr() {
-			return "(" + repr(waiting) + ")(" + repr(crossing) + ")(" + repr(all) + ")";
+			return "(" + repr(waiting) + ")(" + repr(crossing) + ")";
 		}
 	}
 	
@@ -36,7 +31,7 @@ public class RopeTest {
     @Test
     public void testEmptyRope() {
     	TestRope r = new TestRope();
-    	assertEquals("()()()", r.repr());
+    	assertEquals("()()", r.repr());
     }
     
     @Test
@@ -44,7 +39,7 @@ public class RopeTest {
     	TestRope r = new TestRope();
     	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enterDirectly(m);
-    	assertEquals("()(1>)(1>)", r.repr());
+    	assertEquals("()(1>)", r.repr());
     }
 
     @Test
@@ -52,7 +47,7 @@ public class RopeTest {
     	TestRope r = new TestRope();
     	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enqueue(m);
-    	assertEquals("(1>)()(1>)", r.repr());
+    	assertEquals("(1>)()", r.repr());
     }
 
     @Test
@@ -61,7 +56,7 @@ public class RopeTest {
     	Monkey m = new Monkey(1, Direction.RIGHT, r, events);
     	r.enqueue(m);
     	r.enter(m);
-    	assertEquals("()(1>)(1>)", r.repr());
+    	assertEquals("()(1>)", r.repr());
     }
     
     @Test
@@ -71,6 +66,6 @@ public class RopeTest {
     	r.enqueue(m);
     	r.enter(m);
     	r.leave(m);
-    	assertEquals("()()()", r.repr());
+    	assertEquals("()()", r.repr());
     }
 }
