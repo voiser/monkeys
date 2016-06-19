@@ -40,6 +40,7 @@ public class Monkey implements Runnable {
 	private final EventLogger events;
 	private Monkey notifyEnter;
 	private Monkey notifyLeave;
+	private int step;
 	
 	public Monkey(int id, Direction d, Rope rope, EventLogger events) {
 		this.id = id;
@@ -49,6 +50,7 @@ public class Monkey implements Runnable {
 		this.events = events;
 		this.notifyEnter = null;
 		this.notifyLeave = null;
+		this.step = 0;
 	}
 	
 	public int getId() {
@@ -69,6 +71,10 @@ public class Monkey implements Runnable {
 	
 	public State getState() {
 		return state;
+	}
+	
+	public int getStep() {
+		return step;
 	}
 	
 	public synchronized void notifyEnter() {
@@ -153,6 +159,7 @@ public class Monkey implements Runnable {
 		for (int i = 0; i < 4; i++) {
 			Thread.sleep(1000);
 			log("...advancing...");
+			step++;
 		}
 		events.log(this, "Crossed");
 	}

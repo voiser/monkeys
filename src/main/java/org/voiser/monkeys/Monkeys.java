@@ -7,6 +7,34 @@ import java.util.Random;
 public class Monkeys {
 
 	public static final int N_MONKEYS = 100;
+
+	static class View implements Runnable {
+		
+		private Rope rope;
+		private boolean shouldStop;
+		
+		public View(Rope rope) {
+			this.rope = rope;
+			this.shouldStop = false;
+		}
+		
+		public void stop() {
+			this.shouldStop = true;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				while(! shouldStop) {
+					rope.show();
+					Thread.sleep(500);
+				}
+			}
+			catch (InterruptedException e) {
+				// ignore
+			}
+		}
+	}
 	
 	public static void main(String[] args) throws InterruptedException {
 		
@@ -17,6 +45,10 @@ public class Monkeys {
 			}
 		};
 
+		View view = new View(rope);
+		Thread tview = new Thread(view);
+		tview.start();
+		
 		Random rand = new Random();
 		
 		List<Thread> threads = new ArrayList<>(N_MONKEYS);
@@ -33,5 +65,8 @@ public class Monkeys {
 		for (Thread t : threads) {
 			t.join();
 		}
+		
+		view.stop();
+		tview.join();
 	}
 }
